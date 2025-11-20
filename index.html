@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Všechno Caffe | Premium Experience</title>
+    <meta name="description"
+        content="Všechno Caffe - Exkluzivní prostor v Chebu. Ranní káva, zážitková gastronomie a noční život.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="mode-cafe">
+    <!-- Dynamic Background Layer -->
+    <div class="ambient-bg"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="main-nav glass-panel">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <img src="img/LOGO_TRANSPARENT.webp" alt="Všechno Caffe Logo">
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-item">Domů</a></li>
+                <li><a href="#menu" class="nav-item">Menu</a></li>
+                <li><a href="#reservations" class="nav-item">Rezervace</a></li>
+                <li><a href="#events" class="nav-item">Akce</a></li>
+                <li><a href="#services" class="nav-item">Služby</a></li>
+            </ul>
+            <div class="nav-socials">
+                <a href="https://www.facebook.com/people/V%C5%A1echno-Caffe/61576887953071/" target="_blank"
+                    class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/vsechnocaffe/" target="_blank" class="social-icon"><i
+                        class="fab fa-instagram"></i></a>
+            </div>
+            <div class="mobile-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge reveal">Welcome to Cheb</div>
+            <h1 id="hero-title" class="reveal-delay-1">Ranní<br>Probuzení</h1>
+            <p id="hero-subtitle" class="reveal-delay-2">Začněte svůj den s výběrovou kávou v atmosféře, která
+                inspiruje.</p>
+            <div class="hero-actions reveal-delay-3">
+                <a href="#menu" id="hero-btn" class="btn btn-primary">Prohlédnout Menu</a>
+                <a href="#reservations" class="btn btn-outline">Rezervovat Stůl</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <!-- Abstract shapes or image container managed by CSS/JS -->
+            <div class="visual-circle"></div>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="line"></div>
+        </div>
+    </header>
+
+    <!-- Menu Section -->
+    <section id="menu" class="section-menu">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Gastronomie</span>
+                <h2 class="section-title">Naše Nabídka</h2>
+            </div>
+
+            <div class="menu-cards">
+                <div class="card glass-panel reveal">
+                    <div class="card-icon"><i class="fas fa-coffee"></i></div>
+                    <h3>Denní Menu</h3>
+                    <p>Každý den pro vás připravujeme čerstvé pokrmy z lokálních surovin. Rychlý oběd nebo dlouhá
+                        snídaně?</p>
+                    <a href="#" class="card-link">Zobrazit nabídku <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="card glass-panel reveal-delay-1">
+                    <div class="card-icon"><i class="fas fa-utensils"></i></div>
+                    <h3>Stálý Lístek</h3>
+                    <p>Výběr toho nejlepšího, co naše kuchyně nabízí. Od lehkých snacků po gurmánské speciality.</p>
+                    <a href="#" class="card-link">Prozkoumat lístek <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="card glass-panel reveal-delay-2">
+                    <div class="card-icon"><i class="fas fa-wine-glass-alt"></i></div>
+                    <h3>Nápoje & Bar</h3>
+                    <p>Signature koktejly, výběrová vína a prémiový alkohol pro vaše večerní chvíle.</p>
+                    <a href="#" class="card-link">Nápojový lístek <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservations Section -->
+    <section id="reservations" class="section-reservations">
+        <div class="container">
+            <div class="text-content reveal center-content">
+                <span class="section-subtitle">Rezervace</span>
+                <h2 class="section-title">Vaše Místo<br>V Centru Dění</h2>
+                <p>Ať už plánujete pracovní schůzku, romantickou večeři nebo oslavu s přáteli, zajistíme vám ten
+                    nejlepší stůl.</p>
+                <div class="reservation-info center-info">
+                    <div class="info-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>+420 123 456 789</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>rezervace@vsechnocaffe.cz</span>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-primary">Online Rezervace</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="section-events">
+        <div class="container">
+            <div class="section-header center">
+                <span class="section-subtitle">Program</span>
+                <h2 class="section-title">Nadcházející Akce</h2>
+            </div>
+
+            <div class="events-slider">
+                <div class="event-card reveal">
+                    <div class="event-date">
+                        <span class="day">PÁ</span>
+                        <span class="date">24.11.</span>
+                    </div>
+                    <div class="event-img">
+                        <img src="img/imgfff.webp" alt="DJ Night">
+                    </div>
+                    <div class="event-details glass-panel">
+                        <h3>DJ Night: Deep House</h3>
+                        <p>Atmosférický večer s rezidentními DJs.</p>
+                    </div>
+                </div>
+
+                <div class="event-card reveal-delay-1">
+                    <div class="event-date">
+                        <span class="day">SO</span>
+                        <span class="date">25.11.</span>
+                    </div>
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1501612780327-45045538702b?auto=format&fit=crop&w=800&q=80"
+                            alt="Live Music">
+                    </div>
+                    <div class="event-details glass-panel">
+                        <h3>Live Jazz Trio</h3>
+                        <p>Živá hudba k večeři a vínu.</p>
+                    </div>
+                </div>
+
+                <div class="event-card reveal-delay-2">
+                    <div class="event-date">
+                        <span class="day">ST</span>
+                        <span class="date">29.11.</span>
+                    </div>
+                    <div class="event-img">
+                        <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80"
+                            alt="Tasting">
+                    </div>
+                    <div class="event-details glass-panel">
+                        <h3>Rumová Degustace</h3>
+                        <p>Cesta kolem světa s prémiovými rumy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section-services">
+        <div class="container">
+            <div class="services-grid">
+                <div class="service-box reveal">
+                    <h2>Dárkové Vouchery</h2>
+                    <p>Darujte zážitek. Vouchery v hodnotě 1000 a 2000 Kč jsou ideálním dárkem pro vaše blízké.</p>
+                    <a href="#" class="btn btn-outline">Zakoupit Voucher</a>
+                </div>
+                <div class="service-box reveal-delay-1">
+                    <h2>Soukromé Akce</h2>
+                    <p>Firemní večírky, oslavy narozenin nebo svatby. Pronajměte si naše prostory pro vaši akci.</p>
+                    <a href="#" class="btn btn-outline">Poptat Pronájem</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h3>Všechno Caffe</h3>
+                <p>Music Bar • Restaurace • Kavárna</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">O nás</a>
+                <a href="#">Kariéra</a>
+                <a href="#">Kontakt</a>
+                <a href="#">GDPR</a>
+            </div>
+            <div class="footer-copy">
+                &copy; 2025 Všechno Caffe. Design by Antigravity.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mode Switcher -->
+    <div class="mode-switcher glass-panel">
+        <button class="switch-btn active" data-mode="cafe">
+            <i class="fas fa-coffee"></i>
+            <span class="tooltip">Ráno</span>
+        </button>
+        <button class="switch-btn" data-mode="lunch">
+            <i class="fas fa-utensils"></i>
+            <span class="tooltip">Oběd</span>
+        </button>
+        <button class="switch-btn" data-mode="club">
+            <i class="fas fa-glass-martini-alt"></i>
+            <span class="tooltip">Večer</span>
+        </button>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
