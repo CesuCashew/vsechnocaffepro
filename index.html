@@ -1,246 +1,481 @@
 <!DOCTYPE html>
-<html lang="cs">
+<!--
+  MEZIČAS CAFFE — one-page editorial web
+  Koncept: kavárna, která žije tři životy během dne (ráno / poledne / večer).
+  Denní doba je řízena atributem data-mode na <html>. Veškeré téma jede přes
+  CSS custom properties přepínané podle data-mode (viz css/styles.css).
+  Logika přepínání: js/main.js (sekce "MODE ENGINE").
+-->
+<html lang="cs" data-mode="rano">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Všechno Caffe | Premium Experience</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- theme-color se mění s denní dobou (nastavuje main.js) -->
+    <meta name="theme-color" content="#f0e6d6" id="theme-color" />
+    <title>Mezičas — zin o jedné kavárně</title>
     <meta name="description"
-        content="Všechno Caffe - Exkluzivní prostor v Chebu. Ranní káva, zážitková gastronomie a noční život.">
+        content="Mezičas Caffe — kavárna, kuchyně a music bar, která mění tvář podle denní doby. Ráno pomalá snídaně, v poledne provoz, večer noční směna." />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fonty: Fraunces (display serif s optickou osou) + IBM Plex Mono (čísla, metadata, čas) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styles.css" />
 </head>
 
-<body class="mode-cafe">
-    <!-- Dynamic Background Layer -->
-    <div class="ambient-bg"></div>
-    <div class="noise-overlay"></div>
+<body>
+    <!-- Skip link pro klávesnici -->
+    <a class="skip-link" href="#hlavni">Přeskočit na obsah</a>
 
-    <!-- Navigation -->
-    <nav class="main-nav glass-panel">
-        <div class="container nav-container">
-            <a href="#" class="logo">
-                <img src="img/LOGO_TRANSPARENT.webp" alt="Všechno Caffe Logo">
+    <!-- Zrno + duotónová vrstva přes celou plochu (laděná do módu) -->
+    <div class="grain" aria-hidden="true"></div>
+    <!-- Světelný "wipe", který přejede plochu při změně denní doby (řídí GSAP) -->
+    <div class="wipe" aria-hidden="true"></div>
+    <!-- Vlastní kurzor (jen na zařízeních s myší; doplňuje, neskrývá nativní stav) -->
+    <div class="cursor" aria-hidden="true"></div>
+
+    <!-- ============================================================ -->
+    <!-- 00 — MASTHEAD (hlavička magazínu, ne navbar)                 -->
+    <!-- ============================================================ -->
+    <header class="masthead">
+        <div class="masthead__row">
+            <!-- Wordmark -->
+            <a class="wordmark" href="#hlavni" aria-label="Mezičas Caffe — domů">
+                <span class="wordmark__name">Mezičas</span>
+                <span class="wordmark__sub">caffe</span>
             </a>
-            <ul class="nav-links">
-                <li><a href="#home" class="nav-item">Domů</a></li>
-                <li><a href="#menu" class="nav-item">Menu</a></li>
-                <li><a href="#reservations" class="nav-item">Rezervace</a></li>
-                <li><a href="#events" class="nav-item">Akce</a></li>
-                <li><a href="#services" class="nav-item">Služby</a></li>
-            </ul>
-            <div class="nav-socials">
-                <a href="https://www.facebook.com/people/V%C5%A1echno-Caffe/61576887953071/" target="_blank"
-                    class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/vsechnocaffe/" target="_blank" class="social-icon"><i
-                        class="fab fa-instagram"></i></a>
-            </div>
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
+
+            <!-- Tiráž vydání + živé hodiny v mono -->
+            <p class="masthead__issue">
+                <span>Zin o jedné kavárně</span>
+                <span class="masthead__dot">·</span>
+                <span>Vydání č.&nbsp;03</span>
+                <span class="masthead__dot">·</span>
+                <time class="clock" id="clock" datetime="">--:--:--</time>
+            </p>
+
+            <!-- Mono navigace -->
+            <nav class="nav" id="nav" aria-label="Hlavní navigace">
+                <a href="#den">01 Den</a>
+                <a href="#nabidka">02 Nabídka</a>
+                <a href="#rezervace">03 Rezervace</a>
+                <a href="#program">04 Program</a>
+                <a href="#marginalie">05 Marginálie</a>
+            </nav>
+
+            <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="nav"
+                aria-label="Otevřít navigaci">
+                <span></span><span></span>
             </button>
         </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <header id="home" class="hero">
-        <div class="hero-content">
-            <div class="hero-badge reveal">Welcome to Cheb</div>
-            <h1 id="hero-title" class="reveal-delay-1">Ranní<br>Probuzení</h1>
-            <p id="hero-subtitle" class="reveal-delay-2">Začněte svůj den s výběrovou kávou v atmosféře, která
-                inspiruje.</p>
-            <div class="hero-actions reveal-delay-3">
-                <a href="#menu" id="hero-btn" class="btn btn-primary">Prohlédnout Menu</a>
-                <a href="#reservations" class="btn btn-outline">Rezervovat Stůl</a>
+        <!-- ---- Přepínač denní doby: "otočka času" ---- -->
+        <!-- Třístavový radiogroup. Plný klávesový provoz (šipky + Enter/mezerník). -->
+        <div class="timedial-wrap">
+            <div class="timedial" role="radiogroup" aria-label="Denní doba — přepínač atmosféry">
+                <span class="timedial__thumb" aria-hidden="true"></span>
+                <button class="timedial__opt" role="radio" data-mode="rano" aria-checked="true" tabindex="0">
+                    <span class="timedial__num">01</span>
+                    <span class="timedial__name">Ráno</span>
+                </button>
+                <button class="timedial__opt" role="radio" data-mode="poledne" aria-checked="false" tabindex="-1">
+                    <span class="timedial__num">02</span>
+                    <span class="timedial__name">Poledne</span>
+                </button>
+                <button class="timedial__opt" role="radio" data-mode="vecer" aria-checked="false" tabindex="-1">
+                    <span class="timedial__num">03</span>
+                    <span class="timedial__name">Večer</span>
+                </button>
             </div>
-        </div>
-        <div class="hero-visual">
-            <!-- Abstract shapes or image container managed by CSS/JS -->
-            <div class="visual-circle"></div>
-        </div>
-
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="line"></div>
+            <!-- Stav: ručně zvoleno vs. podle reálného času -->
+            <button class="timedial__reset" id="timeReset" hidden>
+                <span class="timedial__reset-dot" aria-hidden="true"></span>
+                podle času
+            </button>
         </div>
     </header>
 
-    <!-- Menu Section -->
-    <section id="menu" class="section-menu">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">Gastronomie</span>
-                <h2 class="section-title">Naše Nabídka</h2>
+    <main id="hlavni">
+        <!-- ============================================================ -->
+        <!-- HERO — titulní strana, headline řízený módem                -->
+        <!-- ============================================================ -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero__grid">
+                <p class="hero__kicker" id="hero-kicker">Otevřeno od 7:30 · káva a ticho</p>
+
+                <h1 class="hero__title" id="hero-title">
+                    <span class="hero__title-line">Pomalé</span>
+                    <span class="hero__title-line hero__title-line--em">ráno</span>
+                </h1>
+
+                <p class="hero__lede" id="hero-lede">
+                    Než se den rozběhne, patří stůl u okna vám. Filtr, který klidně stihne vystydnout,
+                    a nikdo vás nikam nežene.
+                </p>
+
+                <div class="hero__meta">
+                    <a class="hero__link" href="#nabidka">
+                        <span>Co dnes vaříme</span>
+                        <span class="hero__arrow" aria-hidden="true">→</span>
+                    </a>
+                    <p class="hero__where">Kamenná 14, Cheb · 49.7°N</p>
+                </div>
+
+                <!-- Obrazový slot: fotka se mění s denní dobou, zpracovaná do duotónu. -->
+                <figure class="hero__plate" data-parallax="0.12" data-slot="hero">
+                    <div class="slot slot--hero">
+                        <img class="slot__mode" data-for="rano" src="assets/hero-rano.webp"
+                            alt="Tři šálky kávy nad stolem v ranním světle" width="1400" height="1750" />
+                        <img class="slot__mode" data-for="poledne" src="assets/hero-poledne.webp"
+                            alt="Polední talíře s jídlem na dřevěném stole" width="1200" height="800" loading="lazy" />
+                        <img class="slot__mode" data-for="vecer" src="assets/hero-vecer.webp"
+                            alt="Koktejl s rozmarýnem ve tmě baru" width="1200" height="800" loading="lazy" />
+                    </div>
+                    <figcaption class="hero__cap">Stůl u okna, 8:14</figcaption>
+                </figure>
             </div>
 
-            <div class="menu-cards">
-                <div class="card glass-panel reveal">
-                    <div class="card-icon"><i class="fas fa-coffee"></i></div>
-                    <h3>Denní Menu</h3>
-                    <p>Každý den pro vás připravujeme čerstvé pokrmy z lokálních surovin. Rychlý oběd nebo dlouhá
-                        snídaně?</p>
-                    <a href="#" class="card-link">Zobrazit nabídku <i class="fas fa-arrow-right"></i></a>
+            <!-- Kultivovaný scroll cue -->
+            <a class="scrollcue" href="#den" aria-label="Posunout dolů na program dne">
+                <span>dolů do dne</span>
+                <span class="scrollcue__bar" aria-hidden="true"></span>
+            </a>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 01 — DEN jako index / timeline (slouží i jako přepínač módů) -->
+        <!-- ============================================================ -->
+        <section class="day" id="den" aria-labelledby="den-h">
+            <div class="rubric">
+                <span class="rubric__num">01</span>
+                <h2 class="rubric__title" id="den-h">Den ve třech kapitolách</h2>
+                <p class="rubric__note">
+                    Jeden podnik, tři nálady. Klikni na kapitolu a stránka se přepne do té denní doby.
+                </p>
+            </div>
+
+            <ol class="chapters">
+                <li class="chapter" data-jump="rano">
+                    <button class="chapter__btn" data-mode="rano">
+                        <span class="chapter__idx">01</span>
+                        <span class="slot slot--thumb chapter__thumb">
+                            <img src="assets/hero-rano.webp" alt="" loading="lazy" />
+                        </span>
+                        <span class="chapter__body">
+                            <span class="chapter__name">Ráno</span>
+                            <span class="chapter__time">7:30 — 11:00</span>
+                            <span class="chapter__desc">Pomalá snídaně, filtr, ticho. Ranní rituál, který nikdo nepřerušuje.</span>
+                        </span>
+                        <span class="chapter__go" aria-hidden="true">přepnout →</span>
+                    </button>
+                </li>
+                <li class="chapter" data-jump="poledne">
+                    <button class="chapter__btn" data-mode="poledne">
+                        <span class="chapter__idx">02</span>
+                        <span class="slot slot--thumb chapter__thumb">
+                            <img src="assets/hero-poledne.webp" alt="" loading="lazy" />
+                        </span>
+                        <span class="chapter__body">
+                            <span class="chapter__name">Poledne</span>
+                            <span class="chapter__time">11:00 — 17:00</span>
+                            <span class="chapter__desc">Denní menu, ruch, talíř na hodinu. Provoz, který má spád.</span>
+                        </span>
+                        <span class="chapter__go" aria-hidden="true">přepnout →</span>
+                    </button>
+                </li>
+                <li class="chapter" data-jump="vecer">
+                    <button class="chapter__btn" data-mode="vecer">
+                        <span class="chapter__idx">03</span>
+                        <span class="slot slot--thumb chapter__thumb">
+                            <img src="assets/hero-vecer.webp" alt="" loading="lazy" />
+                        </span>
+                        <span class="chapter__body">
+                            <span class="chapter__name">Večer</span>
+                            <span class="chapter__time">17:00 — pozdě</span>
+                            <span class="chapter__desc">Koktejly, DJ, živá hudba. Noční směna, kvůli které se nechce domů.</span>
+                        </span>
+                        <span class="chapter__go" aria-hidden="true">přepnout →</span>
+                    </button>
+                </li>
+            </ol>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 02 — NABÍDKA (editoriální menu; obsah se mění s módem)       -->
+        <!-- Všechny tři sady jsou v DOM, viditelná je vždy ta podle módu -->
+        <!-- ============================================================ -->
+        <section class="menu" id="nabidka" aria-labelledby="menu-h">
+            <div class="rubric">
+                <span class="rubric__num">02</span>
+                <h2 class="rubric__title" id="menu-h">Co je na lístku</h2>
+                <p class="rubric__note" id="menu-note">Ráno se snídá. Ceny jsou v korunách, kuchyně do 10:30.</p>
+            </div>
+
+            <!-- RÁNO -->
+            <div class="menu-set" data-when="rano">
+                <div class="menu-col">
+                    <h3 class="menu-col__h">Z kuchyně</h3>
+                    <ul class="dishlist">
+                        <li class="dish"><span class="dish__name">Křupavý chléb, máslo, med z Krušných hor</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">75</span></li>
+                        <li class="dish"><span class="dish__name">Míchaná vajíčka na pažitce, dvě topinky</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">110</span></li>
+                        <li class="dish"><span class="dish__name">Ovesná kaše, pečené jablko, vlašské ořechy</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">95</span></li>
+                        <li class="dish"><span class="dish__name">Tvarohový koláč podle babičky</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">65</span></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <h3 class="menu-col__h">Ke kávě</h3>
+                    <ul class="dishlist">
+                        <li class="dish"><span class="dish__name">Filtr dne — Etiopie / Kolumbie</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">65</span></li>
+                        <li class="dish"><span class="dish__name">Flat white</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">70</span></li>
+                        <li class="dish"><span class="dish__name">Espresso, dvojité</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">55</span></li>
+                        <li class="dish"><span class="dish__name">Čaj sypaný, konvička</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">60</span></li>
+                    </ul>
+                </div>
+                <p class="menu-aside">
+                    „Ranní filtr neměníme každý den. Měníme ho, když dopije pytel.”
+                </p>
+            </div>
+
+            <!-- POLEDNE -->
+            <div class="menu-set" data-when="poledne">
+                <div class="menu-col">
+                    <h3 class="menu-col__h">Polévky &amp; talíře</h3>
+                    <ul class="dishlist">
+                        <li class="dish"><span class="dish__name">Polévka dne — viz tabule</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">55</span></li>
+                        <li class="dish"><span class="dish__name">Hovězí líčka, bramborová kaše, kořenová zelenina</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">215</span></li>
+                        <li class="dish"><span class="dish__name">Pečený květák, tahini, granátové jablko</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">165</span></li>
+                        <li class="dish"><span class="dish__name">Domácí gnocchi, máslo a šalvěj</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">175</span></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <h3 class="menu-col__h">K obědu</h3>
+                    <ul class="dishlist">
+                        <li class="dish"><span class="dish__name">Limonáda dne — bezový květ / máta</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">60</span></li>
+                        <li class="dish"><span class="dish__name">Sklenka přírodního vína</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">95</span></li>
+                        <li class="dish"><span class="dish__name">Káva po obědě</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">55</span></li>
+                        <li class="dish"><span class="dish__name">Dezert dne</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">85</span></li>
+                    </ul>
+                </div>
+                <p class="menu-aside">
+                    Denní menu visí na tabuli u baru a mění se podle trhu. Vaříme do 14:30.
+                </p>
+            </div>
+
+            <!-- VEČER -->
+            <div class="menu-set" data-when="vecer">
+                <div class="menu-col">
+                    <h3 class="menu-col__h">Koktejly</h3>
+                    <ul class="dishlist">
+                        <li class="dish"><span class="dish__name">Negroni, stáčený do lahve</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">165</span></li>
+                        <li class="dish"><span class="dish__name">Mezičas Sour — domácí likér, citron, bílek</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">175</span></li>
+                        <li class="dish"><span class="dish__name">Espresso Martini po směně</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">170</span></li>
+                        <li class="dish"><span class="dish__name">Highball okamžiku — gin, tonik, bez okolků</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">140</span></li>
+                    </ul>
+                </div>
+                <div class="menu-col">
+                    <h3 class="menu-col__h">Sklenka &amp; pivo</h3>
+                    <ul class="dishlist">
+                        <li class="dish"><span class="dish__name">Přírodní víno, sklenka</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">110</span></li>
+                        <li class="dish"><span class="dish__name">Plzeň 12°, tanková</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">55</span></li>
+                        <li class="dish"><span class="dish__name">Vermut on the rocks</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">95</span></li>
+                        <li class="dish"><span class="dish__name">Whisky, malá</span><span class="dish__dots" aria-hidden="true"></span><span class="dish__price">120</span></li>
+                    </ul>
+                </div>
+                <p class="menu-aside">
+                    Bar míchá do půlnoci, o víkendu déle. Program večera najdeš níž v sekci&nbsp;04.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 03 — REZERVACE                                              -->
+        <!-- ============================================================ -->
+        <section class="reserve" id="rezervace" aria-labelledby="rez-h">
+            <div class="rubric">
+                <span class="rubric__num">03</span>
+                <h2 class="rubric__title" id="rez-h">Sednout si k nám</h2>
+            </div>
+
+            <div class="reserve__grid">
+                <div class="reserve__lead">
+                    <p>
+                        Přes den se stůl většinou najde i bez ohlášení. Na večer, na větší partu nebo
+                        když chcete jistotu, radši zavolejte — domluvíme se za minutu.
+                    </p>
                 </div>
 
-                <div class="card glass-panel reveal-delay-1">
-                    <div class="card-icon"><i class="fas fa-utensils"></i></div>
-                    <h3>Stálý Lístek</h3>
-                    <p>Výběr toho nejlepšího, co naše kuchyně nabízí. Od lehkých snacků po gurmánské speciality.</p>
-                    <a href="#" class="card-link">Prozkoumat lístek <i class="fas fa-arrow-right"></i></a>
-                </div>
+                <figure class="reserve__img">
+                    <div class="slot">
+                        <img src="assets/interier.webp" alt="Interiér kavárny Mezičas — křesla a barový pult"
+                            width="1400" height="933" loading="lazy" />
+                    </div>
+                    <figcaption class="hero__cap">Vevnitř, mezi směnami</figcaption>
+                </figure>
 
-                <div class="card glass-panel reveal-delay-2">
-                    <div class="card-icon"><i class="fas fa-wine-glass-alt"></i></div>
-                    <h3>Nápoje & Bar</h3>
-                    <p>Signature koktejly, výběrová vína a prémiový alkohol pro vaše večerní chvíle.</p>
-                    <a href="#" class="card-link">Nápojový lístek <i class="fas fa-arrow-right"></i></a>
-                </div>
+                <dl class="reserve__contact">
+                    <div class="reserve__pair">
+                        <dt>Telefon</dt>
+                        <dd><a href="tel:+420777014220">+420 777 014 220</a></dd>
+                    </div>
+                    <div class="reserve__pair">
+                        <dt>E-mail</dt>
+                        <dd><a href="mailto:ahoj@mezicas.cafe">ahoj@mezicas.cafe</a></dd>
+                    </div>
+                    <div class="reserve__pair">
+                        <dt>Kde</dt>
+                        <dd>Kamenná 14, Cheb</dd>
+                    </div>
+                    <div class="reserve__pair">
+                        <dt>Otevřeno</dt>
+                        <dd>Po–Pá 7:30–24:00<br>So 9:00–01:00 · Ne 9:00–22:00</dd>
+                    </div>
+                </dl>
+
+                <p class="reserve__big">
+                    Nebo prostě přijďte.<br>
+                    <a href="tel:+420777014220">Zavolat &nbsp;→</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 04 — PROGRAM / AKCE (broadsheet výpis, váženo k večeru)      -->
+        <!-- ============================================================ -->
+        <section class="program" id="program" aria-labelledby="prog-h">
+            <div class="rubric">
+                <span class="rubric__num">04</span>
+                <h2 class="rubric__title" id="prog-h">Co se chystá večer</h2>
+                <p class="rubric__note">Vstup zdarma, pokud není uvedeno jinak. Začínáme, až se setmí.</p>
+            </div>
+
+            <ul class="bills">
+                <li class="bill">
+                    <span class="bill__date"><span class="bill__day">ČT</span><span class="bill__num">25.&nbsp;6.</span></span>
+                    <span class="bill__main">
+                        <span class="bill__title">Vinylový večer: deep cuts ze sedmdesátek</span>
+                        <span class="bill__by">DJ Hřebík hraje jen z desek</span>
+                    </span>
+                    <span class="bill__time">20:00</span>
+                </li>
+                <li class="bill">
+                    <span class="bill__date"><span class="bill__day">PÁ</span><span class="bill__num">26.&nbsp;6.</span></span>
+                    <span class="bill__main">
+                        <span class="bill__title">Koncert: Tichý práh</span>
+                        <span class="bill__by">indie folk z Karlových Varů · vstup 150</span>
+                    </span>
+                    <span class="bill__time">20:30</span>
+                </li>
+                <li class="bill">
+                    <span class="bill__date"><span class="bill__day">SO</span><span class="bill__num">27.&nbsp;6.</span></span>
+                    <span class="bill__main">
+                        <span class="bill__title">Letní noc na dvoře: koktejly &amp; soul</span>
+                        <span class="bill__by">míchá celý bar, hraje se do rána</span>
+                    </span>
+                    <span class="bill__time">21:00</span>
+                </li>
+                <li class="bill">
+                    <span class="bill__date"><span class="bill__day">ST</span><span class="bill__num">1.&nbsp;7.</span></span>
+                    <span class="bill__main">
+                        <span class="bill__title">Otevřený mikrofon: poezie a písně</span>
+                        <span class="bill__by">přijď číst, hrát nebo jen poslouchat</span>
+                    </span>
+                    <span class="bill__time">19:00</span>
+                </li>
+                <li class="bill">
+                    <span class="bill__date"><span class="bill__day">ČT</span><span class="bill__num">9.&nbsp;7.</span></span>
+                    <span class="bill__main">
+                        <span class="bill__title">Degustace přírodních vín z Moravy</span>
+                        <span class="bill__by">šest sklenek a vinař u stolu · 350</span>
+                    </span>
+                    <span class="bill__time">18:30</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 05 — MARGINÁLIE (vouchery + soukromé akce, jako poznámky)    -->
+        <!-- ============================================================ -->
+        <section class="margins" id="marginalie" aria-labelledby="marg-h">
+            <div class="rubric">
+                <span class="rubric__num">05</span>
+                <h2 class="rubric__title" id="marg-h">Na okraj</h2>
+            </div>
+
+            <div class="margins__grid">
+                <article class="note">
+                    <h3 class="note__h">Voucher místo dárku</h3>
+                    <p>
+                        Když nevíte co, dejte čas u nás. Voucher na libovolnou částku napíšeme rukou
+                        a platí na všechno — od ranního filtru po půlnoční Negroni.
+                    </p>
+                    <a class="note__link" href="mailto:ahoj@mezicas.cafe?subject=Voucher">Napsat o voucher →</a>
+                </article>
+
+                <article class="note">
+                    <h3 class="note__h">Celý podnik pro sebe</h3>
+                    <p>
+                        Narozeniny, křest knížky, firemní sešlost bez konferenčního pachu. Po domluvě
+                        zavřeme dveře a večer patří jen vám — s kuchyní i barem.
+                    </p>
+                    <a class="note__link" href="mailto:ahoj@mezicas.cafe?subject=Soukromá akce">Domluvit termín →</a>
+                </article>
+
+                <aside class="margins__side">
+                    <p class="margins__quote">„Mezičas je ta hodina, kdy ještě nezačalo to další.”</p>
+                    <p class="margins__src">— z nástěnky u baru</p>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- TIRÁŽ / kolofon                                              -->
+    <!-- ============================================================ -->
+    <footer class="colophon">
+        <div class="colophon__grid">
+            <div class="colophon__brand">
+                <span class="colophon__mark">Mezičas</span>
+                <p class="colophon__line">Kavárna · kuchyně · music bar</p>
+            </div>
+
+            <div class="colophon__set">
+                <h4>Najdete nás</h4>
+                <p>Kamenná 14, Cheb<br>+420 777 014 220<br>ahoj@mezicas.cafe</p>
+            </div>
+
+            <div class="colophon__set">
+                <h4>Sociální sítě</h4>
+                <p>
+                    <a href="#">Instagram</a><br>
+                    <a href="#">Facebook</a>
+                </p>
+            </div>
+
+            <div class="colophon__set colophon__set--credits">
+                <h4>Tiráž</h4>
+                <p>
+                    Sázeno písmy Fraunces &amp; IBM&nbsp;Plex&nbsp;Mono.<br>
+                    Vydání léto&nbsp;2026, náklad neomezený.<br>
+                    Fiktivní podnik, skutečná chuť na kávu.
+                </p>
             </div>
         </div>
-    </section>
-
-    <!-- Reservations Section -->
-    <section id="reservations" class="section-reservations">
-        <div class="container">
-            <div class="text-content reveal center-content">
-                <span class="section-subtitle">Rezervace</span>
-                <h2 class="section-title">Vaše Místo<br>V Centru Dění</h2>
-                <p>Ať už plánujete pracovní schůzku, romantickou večeři nebo oslavu s přáteli, zajistíme vám ten
-                    nejlepší stůl.</p>
-                <div class="reservation-info center-info">
-                    <div class="info-item">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>+420 123 456 789</span>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>rezervace@vsechnocaffe.cz</span>
-                    </div>
-                </div>
-                <a href="#" class="btn btn-primary">Online Rezervace</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Events Section -->
-    <section id="events" class="section-events">
-        <div class="container">
-            <div class="section-header center">
-                <span class="section-subtitle">Program</span>
-                <h2 class="section-title">Nadcházející Akce</h2>
-            </div>
-
-            <div class="events-slider">
-                <div class="event-card reveal">
-                    <div class="event-date">
-                        <span class="day">PÁ</span>
-                        <span class="date">24.11.</span>
-                    </div>
-                    <div class="event-img">
-                        <img src="img/imgfff.webp" alt="DJ Night">
-                    </div>
-                    <div class="event-details glass-panel">
-                        <h3>DJ Night: Deep House</h3>
-                        <p>Atmosférický večer s rezidentními DJs.</p>
-                    </div>
-                </div>
-
-                <div class="event-card reveal-delay-1">
-                    <div class="event-date">
-                        <span class="day">SO</span>
-                        <span class="date">25.11.</span>
-                    </div>
-                    <div class="event-img">
-                        <img src="https://images.unsplash.com/photo-1501612780327-45045538702b?auto=format&fit=crop&w=800&q=80"
-                            alt="Live Music">
-                    </div>
-                    <div class="event-details glass-panel">
-                        <h3>Live Jazz Trio</h3>
-                        <p>Živá hudba k večeři a vínu.</p>
-                    </div>
-                </div>
-
-                <div class="event-card reveal-delay-2">
-                    <div class="event-date">
-                        <span class="day">ST</span>
-                        <span class="date">29.11.</span>
-                    </div>
-                    <div class="event-img">
-                        <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80"
-                            alt="Tasting">
-                    </div>
-                    <div class="event-details glass-panel">
-                        <h3>Rumová Degustace</h3>
-                        <p>Cesta kolem světa s prémiovými rumy.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="section-services">
-        <div class="container">
-            <div class="services-grid">
-                <div class="service-box reveal">
-                    <h2>Dárkové Vouchery</h2>
-                    <p>Darujte zážitek. Vouchery v hodnotě 1000 a 2000 Kč jsou ideálním dárkem pro vaše blízké.</p>
-                    <a href="#" class="btn btn-outline">Zakoupit Voucher</a>
-                </div>
-                <div class="service-box reveal-delay-1">
-                    <h2>Soukromé Akce</h2>
-                    <p>Firemní večírky, oslavy narozenin nebo svatby. Pronajměte si naše prostory pro vaši akci.</p>
-                    <a href="#" class="btn btn-outline">Poptat Pronájem</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container footer-content">
-            <div class="footer-brand">
-                <h3>Všechno Caffe</h3>
-                <p>Music Bar • Restaurace • Kavárna</p>
-            </div>
-            <div class="footer-links">
-                <a href="#">O nás</a>
-                <a href="#">Kariéra</a>
-                <a href="#">Kontakt</a>
-                <a href="#">GDPR</a>
-            </div>
-            <div class="footer-copy">
-                &copy; 2025 Všechno Caffe. Design by Antigravity.
-            </div>
-        </div>
+        <p class="colophon__foot">
+            <span>© 2026 Mezičas Caffe</span>
+            <span class="colophon__foot-time">právě je <time id="clock-foot">--:--</time></span>
+        </p>
     </footer>
 
-    <!-- Mode Switcher -->
-    <div class="mode-switcher glass-panel">
-        <button class="switch-btn active" data-mode="cafe">
-            <i class="fas fa-coffee"></i>
-            <span class="tooltip">Ráno</span>
-        </button>
-        <button class="switch-btn" data-mode="lunch">
-            <i class="fas fa-utensils"></i>
-            <span class="tooltip">Oběd</span>
-        </button>
-        <button class="switch-btn" data-mode="club">
-            <i class="fas fa-glass-martini-alt"></i>
-            <span class="tooltip">Večer</span>
-        </button>
-    </div>
-
-    <script src="js/main.js"></script>
+    <!-- GSAP + ScrollTrigger + Lenis (smooth scroll). Web funguje i bez nich. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
+    <script src="js/main.js" defer></script>
 </body>
 
 </html>
